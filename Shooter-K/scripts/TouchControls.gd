@@ -43,7 +43,7 @@ func _input(event: InputEvent) -> void:
 			var normalized := delta_vec / joystick_radius
 			player.set_move_input(Vector2(normalized.x, normalized.y))
 		elif event.index == aim_touch_index:
-			var drag_delta := event.position - aim_last_pos
+			var drag_delta: Vector2 = event.position - aim_last_pos
 			aim_last_pos = event.position
 			player.apply_look_delta(drag_delta)
 
