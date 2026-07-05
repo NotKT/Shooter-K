@@ -1,8 +1,8 @@
 extends Control
 
-# Circular fire button styled like a bullet icon: gold ring + bullet shape.
-# Tap to shoot. Size/position driven by HUDSettings.
-# When HUDSettings.edit_mode is on, dragging it repositions it instead.
+# Fire button styled as a reticle: dark disc, gray ring, corner tick marks,
+# and a bullet+impact icon in the center. Tap to shoot.
+# Size/position driven by HUDSettings. Drag to reposition when edit_mode is on.
 
 var base_radius: float = 70.0
 var player: CharacterBody3D
@@ -30,42 +30,54 @@ func _update_position() -> void:
 
 func _draw() -> void:
 	var c: Vector2 = size / 2.0
-	var edit_dim: float = 0.55 if HUDSettings.edit_mode else 1.0
+	var dim: float = 0.55 if HUDSettings.edit_mode else 1.0
+	var r: float = base_radius
 
-	# Dark background disc
-	draw_circle(c, base_radius, Color(0.08, 0.08, 0.08, 0.85 * edit_dim))
+	# Dark disc background
+	draw_circle(c, r, Color(0.05, 0.05, 0.05, 0.88 * dim))
 
-	# Gold outer ring
-	var gold: Color = Color(0.85, 0.7, 0.15, edit_dim)
-	draw_arc(c, base_radius - 3.0, 0, TAU, 64, gold, 5.0, true)
+	# Gray outer ring
+	var ring_color := Color(0.62, 0.62, 0.62, dim)
+	draw_arc(c, r - 3.0, 0, TAU, 64, ring_color, 5.0, true)
 
-	# Bullet shape: rounded tip (circle) + body (rounded rect) pointing up-right,
-	# drawn simply as a capsule-like shape using a rect + circle.
-	var bullet_len: float = base_radius * 1.1
-	var bullet_width: float = base_radius * 0.55
-	var casing_color: Color = Color(0.75, 0.76, 0.78, edit_dim)
-	var tip_color: Color = Color(0.92, 0.75, 0.35, edit_dim)
+	# Corner tick marks (N/E/S/W), reticle-style
+	var tick_len := r * 0.28
+	var tick_gap := r + 6.0
+	var dirs := [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]
+	for d in dirs:
+		var perp: Vector2 = Vector2(-d.y, d.x)
+		var base_pt: Vector2 = c + d * tick_gap
+		draw_line(base_pt - perp * tick_len * 0.5, base_pt + perp * tick_len * 0.5, ring_color, 4.0)
 
-	# Casing (body) - a rectangle centered, slightly below center
-	var body_rect := Rect2(
-		c.x - bullet_width / 2.0,
-		c.y - bullet_len * 0.15,
-		bullet_width,
-		bullet_len * 0.75
-	)
-	draw_rect(body_rect, casing_color)
+	# Bullet icon: casing (white rect) + rounded tip, tilted diagonally
+	var icon_scale: float = r / 70.0
+	var bullet_len := 34.0 * icon_scale
+	var bullet_width := 13.0 * icon_scale
+	var white := Color(0.95, 0.95, 0.95, dim)
 
-	# Tip (rounded) - a circle at the top of the casing
-	var tip_center := Vector2(c.x, body_rect.position.y)
-	draw_circle(tip_center, bullet_width / 2.0, tip_color)
+	var xform := Transform2D(deg_to_rad(-35.0), c)
 
-	# Small highlight line on the casing for a metallic look
-	draw_line(
-		Vector2(c.x - bullet_width * 0.15, body_rect.position.y + 4.0),
-		Vector2(c.x - bullet_width * 0.15, body_rect.position.y + body_rect.size.y - 4.0),
-		Color(1, 1, 1, 0.3 * edit_dim),
-		2.0
-	)
+	# Casing body (rect centered slightly below bullet tip)
+	var body_rect := Rect2(-bullet_width / 2.0, -bullet_len * 0.15, bullet_width, bullet_len * 0.7)
+	draw_set_transform_matrix(xform)
+	draw_rect(body_rect, white)
+	draw_circle(Vector2(0, body_rect.position.y), bullet_width / 2.0, white)
+	draw_set_transform_matrix(Transform2D())
+
+	# Impact spark (small 4-point star) to the upper-left of the bullet
+	var spark_center: Vector2 = c + Vector2(-r * 0.32, -r * 0.30)
+	var spark_size: float = r * 0.22
+	var spark_points := PackedVector2Array([
+		spark_center + Vector2(0, -spark_size),
+		spark_center + Vector2(spark_size * 0.28, -spark_size * 0.28),
+		spark_center + Vector2(spark_size, 0),
+		spark_center + Vector2(spark_size * 0.28, spark_size * 0.28),
+		spark_center + Vector2(0, spark_size),
+		spark_center + Vector2(-spark_size * 0.28, spark_size * 0.28),
+		spark_center + Vector2(-spark_size, 0),
+		spark_center + Vector2(-spark_size * 0.28, -spark_size * 0.28),
+	])
+	draw_colored_polygon(spark_points, white)
 
 func _gui_input(event: InputEvent) -> void:
 	if HUDSettings.edit_mode:
