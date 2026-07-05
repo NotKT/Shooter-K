@@ -93,10 +93,11 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -90.0
+offset_left = -110.0
 offset_top = 20.0
 offset_right = -20.0
-offset_bottom = 70.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 32
 text = "⚙"
 
 [node name="SettingsPanel" type="PanelContainer" parent="UI"]
@@ -106,31 +107,37 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -220.0
-offset_top = -160.0
-offset_right = 220.0
-offset_bottom = 160.0
+offset_left = -400.0
+offset_top = -280.0
+offset_right = 400.0
+offset_bottom = 280.0
 script = ExtResource("5")
 
 [node name="VBox" type="VBoxContainer" parent="UI/SettingsPanel"]
 layout_mode = 2
+theme_override_constants/separation = 24
 
 [node name="Title" type="Label" parent="UI/SettingsPanel/VBox"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 34
 text = "Customize Controls"
 horizontal_alignment = 1
 
 [node name="JoystickRow" type="HBoxContainer" parent="UI/SettingsPanel/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label" type="Label" parent="UI/SettingsPanel/VBox/JoystickRow"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 26
 text = "Joystick Size"
-custom_minimum_size = Vector2(160, 0)
+custom_minimum_size = Vector2(260, 0)
+vertical_alignment = 1
 
 [node name="JoystickSlider" type="HSlider" parent="UI/SettingsPanel/VBox/JoystickRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 50)
 min_value = 0.6
 max_value = 1.6
 step = 0.05
@@ -138,15 +145,19 @@ value = 1.0
 
 [node name="FireRow" type="HBoxContainer" parent="UI/SettingsPanel/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 20
 
 [node name="Label" type="Label" parent="UI/SettingsPanel/VBox/FireRow"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 26
 text = "Fire Button Size"
-custom_minimum_size = Vector2(160, 0)
+custom_minimum_size = Vector2(260, 0)
+vertical_alignment = 1
 
 [node name="FireSlider" type="HSlider" parent="UI/SettingsPanel/VBox/FireRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 50)
 min_value = 0.6
 max_value = 1.6
 step = 0.05
@@ -154,18 +165,25 @@ value = 1.0
 
 [node name="RepositionToggle" type="CheckButton" parent="UI/SettingsPanel/VBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+theme_override_font_sizes/font_size = 26
 text = "Reposition Controls (drag on screen)"
 
 [node name="ButtonsRow" type="HBoxContainer" parent="UI/SettingsPanel/VBox"]
 layout_mode = 2
 alignment = 1
+theme_override_constants/separation = 30
 
 [node name="ResetButton" type="Button" parent="UI/SettingsPanel/VBox/ButtonsRow"]
 layout_mode = 2
+custom_minimum_size = Vector2(220, 70)
+theme_override_font_sizes/font_size = 24
 text = "Reset to Default"
 
 [node name="CloseButton" type="Button" parent="UI/SettingsPanel/VBox/ButtonsRow"]
 layout_mode = 2
+custom_minimum_size = Vector2(160, 70)
+theme_override_font_sizes/font_size = 24
 text = "Close"
 
 [connection signal="pressed" from="UI/SettingsToggleButton" to="UI/SettingsPanel" method="toggle_visible"]
