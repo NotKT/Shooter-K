@@ -88,6 +88,21 @@ script = ExtResource("3")
 layout_mode = 0
 script = ExtResource("4")
 
+[node name="AmmoLabel" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -220.0
+offset_right = -20.0
+offset_bottom = -170.0
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 2
+text = "12 / 12"
+
 [node name="SettingsToggleButton" type="Button" parent="UI"]
 layout_mode = 1
 anchors_preset = 1
