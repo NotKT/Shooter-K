@@ -11,6 +11,10 @@ run/main_scene="res://scenes/Arena.tscn"
 config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://icon.svg"
 
+[autoload]
+
+HUDSettings="*res://scripts/HUDSettings.gd"
+
 [display]
 
 window/size/viewport_width=1920
