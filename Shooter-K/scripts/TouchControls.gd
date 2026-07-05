@@ -1,7 +1,7 @@
 extends CanvasLayer
 
-# Right half of screen = aim/look drag. Left side movement now comes from
-# the visible VirtualJoystick node instead of a raw touch zone.
+# Right half of screen = aim/look drag. Movement comes from the
+# VirtualJoystick node; firing is handled by the FireButton node directly.
 
 var aim_touch_index: int = -1
 var aim_last_pos: Vector2 = Vector2.ZERO
@@ -33,6 +33,3 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if joystick:
 		player.set_move_input(joystick.output)
-
-func _on_fire_button_pressed() -> void:
-	player.fire()
