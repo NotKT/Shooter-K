@@ -20,6 +20,8 @@ extends CharacterBody3D
 
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var camera: Camera3D = $CameraPivot/Camera3D
+@onready var muzzle: Node3D = $CameraPivot/Camera3D/Muzzle
+@onready var muzzle_light: OmniLight3D = $CameraPivot/Camera3D/Muzzle/MuzzleLight
 
 var move_input: Vector2 = Vector2.ZERO
 var pitch: float = 0.0
@@ -88,11 +90,15 @@ func _raycast_shot() -> void:
 	query.exclude = [self]
 	var result := space_state.intersect_ray(query)
 
+	var end_point: Vector3 = to
 	if result:
+		end_point = result.position
 		print("Hit: ", result.collider.name, " at ", result.position)
-		# Placeholder: apply damage here once other players/enemies exist
 	else:
 		print("Shot missed")
+
+	_flash_muzzle()
+	_spawn_tracer(muzzle.global_transform.origin, end_point)
 
 func _start_reload() -> void:
 	is_reloading = true
@@ -102,3 +108,42 @@ func _start_reload() -> void:
 	is_reloading = false
 	ammo_changed.emit(ammo, max_ammo)
 	reload_finished.emit()
+
+func _flash_muzzle() -> void:
+	muzzle_light.light_energy = 3.5
+	var tween := create_tween()
+	tween.tween_property(muzzle_light, "light_energy", 0.0, 0.08)
+
+func _spawn_tracer(from_pos: Vector3, to_pos: Vector3) -> void:
+	var direction: Vector3 = (to_pos - from_pos)
+	var length: float = direction.length()
+	if length < 0.01:
+		return
+	direction = direction.normalized()
+
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.015
+	cyl.bottom_radius = 0.015
+	cyl.height = length
+	cyl.radial_segments = 6
+
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(1.0, 0.9, 0.4)
+	mat.emission_enabled = true
+	mat.emission = Color(1.0, 0.85, 0.3)
+	mat.emission_energy_multiplier = 3.0
+
+	var mesh_instance := MeshInstance3D.new()
+	mesh_instance.mesh = cyl
+	mesh_instance.material_override = mat
+
+	get_tree().current_scene.add_child(mesh_instance)
+
+	var mid_point: Vector3 = (from_pos + to_pos) * 0.5
+	var reference: Vector3 = Vector3.RIGHT if absf(direction.dot(Vector3.RIGHT)) < 0.9 else Vector3.FORWARD
+	var right: Vector3 = direction.cross(reference).normalized()
+	var forward_axis: Vector3 = right.cross(direction).normalized()
+	mesh_instance.global_transform = Transform3D(Basis(right, direction, forward_axis), mid_point)
+
+	get_tree().create_timer(0.06).timeout.connect(mesh_instance.queue_free)
